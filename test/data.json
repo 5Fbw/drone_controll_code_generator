@@ -1,0 +1,275 @@
+[
+  {
+    "case_id": "0",
+    "instruction": "起飞至10m高度",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 0, -10],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -10]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "1",
+    "instruction": "起飞至8m高度,并向下飞行5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 0, -3],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [0, 0, -3]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "2",
+    "instruction": "起飞至8m高度,并向正南方向飞行5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [-5, 0, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [-5, 0, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "3",
+    "instruction": "起飞至8m高度,并向左飞行5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [-5, 0, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [-5, 0, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "4",
+    "instruction": "起飞至8m高度,顺时针旋转90度,向正南移动5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [-5, 0, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [-5, 0, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "5",
+    "instruction": "起飞至8m高度,顺时针旋转90度,向前移动5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 5, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [0, 5, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "6",
+    "instruction": "起飞至8m高度,转向正东,向正南移动5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [-5, 0, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [-5, 0, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "7",
+    "instruction": "起飞至8m高度,转向正东,向前移动5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 5, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [0, 5, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "8",
+    "instruction": "起飞至8m高度,逆时针旋转90度,向正南移动5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [-5, 0, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [-5, 0, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "9",
+    "instruction": "起飞至8m高度,逆时针旋转90度,向前移动5m",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, -5, -8],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -8],
+      [0, -5, -8]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "10",
+    "instruction": "起飞至10m高度,向正北方向飞行3m，向正西方向飞行2m，降落",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [3, -2, 0],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -10],
+      [3, 0, -10],
+      [3, -2, -10],
+      [3, -2, 0]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "11",
+    "instruction": "起飞至10m高度,向正北方向飞行7m，向正西方向飞行5m，向正北方向飞行3m，向正东方向飞行8m，向正南飞行2m，降落",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [5, 3, 0],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -10],
+      [7, 0, -10],
+      [7, -5, -10],
+      [10, -5, 0],
+      [7, 3, -10],
+      [5, 3, -10],
+      [5, 3, 0]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "12",
+    "instruction": "起飞至10m高度，向右飞行5m，顺时针旋转45度，向前飞行10m，降落",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [7.07, 12.07, 0],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -10],
+      [0, 5, -10],
+      [7.07, 12.07, -10],
+      [7.07, 12.07, 0]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "13",
+    "instruction": "起飞到5m高度，向东移动，再向北移动，画出一个边长5m的正方形轨迹。",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 0, -3],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -5],
+      [0, 5, -5],
+      [5, 5, -5],
+      [5, 0, -5],
+      [0, 0, -5]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "14",
+    "instruction": "起飞并上升5米。你应该以5米边长的正方形模式飞行，通过向前移动并在每个角落向右转实现",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 0, -3],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -5],
+      [5, 0, -5],
+      [5, 5, -5],
+      [0, 5, -5],
+      [0, 0, -5]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  },
+  {
+    "case_id": "15",
+    "instruction": "起飞，以每秒1米的速度升空至10米高度。前进5米,然后转向正西，并以每秒1米的速度前进10米。然后降落。",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [5, 10, 0],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -10],
+      [5, 0, -10],
+      [5, -10, -10],
+      [5, -10, 0]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 1,
+    "actual_path": []
+  },
+  {
+    "case_id": "16",
+    "instruction": "起飞到5m，在无人机机体坐标系的YZ平面内，沿相对于水平轴30度角的右上方向飞行10米。",
+    "origin_pos": [0, 0, 0],
+    "exp_destination": [0, 0, -3],
+    "exp_path": [
+      [0, 0, 0],
+      [0, 0, -5],
+      [0, 8.66, -10],
+      [5, -10, -10],
+      [5, -10, 0]
+    ],
+    "code": "",
+    "path_file": "",
+    "multistep": 0,
+    "actual_path": []
+  }
+]
