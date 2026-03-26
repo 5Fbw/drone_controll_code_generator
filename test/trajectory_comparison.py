@@ -151,14 +151,20 @@ def calculate_completion_rate(matched_points: List[Dict[str, Any]],
     return reached_count / len(matched_points)
 
 
-def is_endpoint_reached(matched_points: List[Dict[str, Any]],
+def is_endpoint_reached_cumulative(matched_points: List[Dict[str, Any]],
+                        tolerance: float = 2.0) -> bool:
+    """判断是否到达终点：依据终点的单步误差"""
+    if not matched_points:
+        return False
+    last_point = matched_points[-1]
+    return bool(abs(last_point['cumulative_dist']) <= tolerance)
+def is_endpoint_reached_step(matched_points: List[Dict[str, Any]],
                         tolerance: float = 2.0) -> bool:
     """判断是否到达终点：依据终点的单步误差"""
     if not matched_points:
         return False
     last_point = matched_points[-1]
     return bool(abs(last_point['step_error']) <= tolerance)
-
 
 def calculate_path_deviation(matched_points: List[Dict[str, Any]]) -> Dict[str, float]:
     """计算累计偏差统计信息"""
@@ -232,7 +238,7 @@ def calculate_shape_similarity(matched_points: List[Dict[str, Any]]) -> float:
 def evaluate_success(matched_points: List[Dict[str, Any]],
                      completion_threshold: float = 0.8,
                      tolerance: float = 2.0) -> bool:
-    endpoint_reached = is_endpoint_reached(matched_points, tolerance)
+    endpoint_reached = is_endpoint_reached_step(matched_points, tolerance)
     completion_rate = calculate_completion_rate(matched_points, tolerance)
     return bool(endpoint_reached and completion_rate >= completion_threshold)
 
@@ -245,7 +251,7 @@ def process_trajectory(data: Dict[str, Any],
 
     matched_points = match_key_points_aligned(exp_path, actual_path_raw)
 
-    endpoint_reached = is_endpoint_reached(matched_points, tolerance)
+    endpoint_reached = is_endpoint_reached_cumulative(matched_points, tolerance)
     completion_rate = calculate_completion_rate(matched_points, tolerance)
     deviation_stats = calculate_path_deviation(matched_points)
     shape_similarity = calculate_shape_similarity(matched_points)  # 新增计算
@@ -337,6 +343,9 @@ def main():
     parser.add_argument('--input', '-i', default="output_qwen3_32b_all_0318_agent_log.json", help='输入JSON文件路径')
     parser.add_argument('--output', '-o', default="output_qwen3_32b_all_0318_agent_result.json",
                         help='输出JSON文件路径')
+    # parser.add_argument('--input', '-i', default="output_qwen3_32b_all_0_log.json", help='输入JSON文件路径')
+    # parser.add_argument('--output', '-o', default="output_qwen3_32b_all_0_result.json",
+    #                     help='输出JSON文件路径')
     parser.add_argument('--start', '-s', type=int, default=0, help='开始序号（默认为0）')
     parser.add_argument('--end', '-e', type=int, default=-1, help='结束序号（-1表示到最后，默认为-1）')
     parser.add_argument('--tolerance', '-t', type=float, default=1.0, help='单步误差容差阈值（米，默认1.0）')
