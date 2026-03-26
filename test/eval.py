@@ -3,6 +3,7 @@ import json
 import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.spatial import distance
+#衡量轨迹相似度，但思路不正确
 class Utils:
     def to_path_ponit_array(self, path_file:str):
         """

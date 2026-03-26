@@ -25,7 +25,9 @@ def json_to_excel(input_file: str, output_file: str):
     ws.title = "无人机控制代码"
 
     # 定义所有字段
-    all_fields = ['case_id', 'instruction', 'origin_pos', 'exp_destination', 'exp_path', 'code', 'path_file', 'multistep', 'actual_path', 'model']
+    all_fields = ['case_id', 'instruction', 'origin_pos', 'exp_destination',
+                  'exp_path', 'code', 'path_file', 'multistep', 'actual_path', 'model',
+                  'token', 'prompt_tokens', 'completion_tokens']
 
     # 写入表头
     for col, header in enumerate(all_fields, 1):
@@ -55,7 +57,10 @@ def json_to_excel(input_file: str, output_file: str):
         'path_file': 30,
         'multistep': 10,
         'actual_path': 40,
-        'model': 20
+        'model': 20,
+        'token': 12,
+        'prompt_tokens': 15,
+        'completion_tokens': 18
     }
 
     for col, field in enumerate(all_fields, 1):
@@ -75,10 +80,10 @@ def main_cli():
     parser = argparse.ArgumentParser(description='JSON转Excel工具')
 
     # 修改此处：删除 required=True，添加 default 参数
-    parser.add_argument('--input', type=str, default='output_qwen3_32b_all_0.json',
+    parser.add_argument('--input', type=str, default='output_qwen3_32b_all_0318_1_agent.json',
                         help='输入的JSON文件路径')
 
-    parser.add_argument('--output', type=str, default='output_qwen3_32b_all.xlsx',
+    parser.add_argument('--output', type=str, default='output_qwen3_32b_all_0318_1_agent.xlsx',
                         help='输出的Excel文件路径')
 
     args = parser.parse_args()

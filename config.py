@@ -5,10 +5,13 @@ model_name = "Qwen"
 output_file_path = "airsim01.py"
 seed_code = '''
     -向上/向下移动 moveToZAsync(-3, 2).join() 以2m/s的速度移动到全局坐标系3m高度处
-    -以机身坐标系以指定速度移动指定时间 moveByVelocityBodyFrameAsync(1, 0, 0, 10).join() 当x = 1时以机身坐标向前以1m/s的速度飞行10s即10m
-                                moveByVelocityBodyFrameAsync(0, 1, 0, 5).join() 当y = 1时以机身坐标向右以1m/s的速度飞行5s即5m
-    -以全局坐标系以指定速度移动指定时间 moveToPositionAsync(-10, 0, 0, 1).join() 在全局坐标以1m/s速度南移动10m的速度
-    -转向 rotateToYawAsync(float yaw = 90, float margin = 5f, float timeout_sec = 60).join()转向正东方 
+    -以机身坐标系以指定速度移动指定时间 向前x为正，向后x为负，向右y为正，向左y为负
+    moveByVelocityBodyFrameAsync(1, 0, 0, 10).join() 当x = 1时以机身坐标向前以1m/s的速度飞行10s即10m
+    moveByVelocityBodyFrameAsync(0, -1, 0, 5).join() 当y = 1时以机身坐标向右以1m/s的速度飞行5s即5m
+    -以全局坐标系以指定速度移动指定时间 向北移动x变大，向南移动x变小，向东移动y变大，向西移动y变小
+    moveToPositionAsync(-10, 0, 0, 1).join() 在全局坐标以1m/s速度南移动10m的速度
+    -转向 
+    rotateToYawAsync( -90,1).join()转向正西方 ,偏向角误差范围是-1
 '''
 security_check_flag = True
 security_constraints = {

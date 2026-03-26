@@ -5,82 +5,101 @@ import argparse
 import openpyxl
 
 
+def parse_json_string(value):
+    """
+    尝试将字符串解析为JSON对象（列表或字典）。
+    如果解析失败或不是字符串，则返回原值。
+    """
+    if not isinstance(value, str):
+        return value
+
+    # 去除首尾空格
+    value = value.strip()
+
+    # 快速判断是否像 JSON 结构
+    if (value.startswith('[') and value.endswith(']')) or \
+            (value.startswith('{') and value.endswith('}')):
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            # 解析失败，返回原字符串
+            return value
+    return value
+
+
 def excel_to_json(input_file: str, output_file: str):
     """
-    将Excel文件转换为JSON文件
-
-    Args:
-        input_file: 输入Excel文件路径
-        output_file: 输出JSON文件路径
+    将Excel文件转换为JSON文件，并尝试自动还原列表/字典类型字段
     """
     print(f"读取输入文件: {input_file}")
-    
-    # 加载Excel文件
-    wb = openpyxl.load_workbook(input_file)
-    ws = wb.active
 
-    # 获取表头
+    if not os.path.exists(input_file):
+        print(f"错误: 输入文件不存在: {input_file}")
+        return
+
+    try:
+        wb = openpyxl.load_workbook(input_file)
+        ws = wb.active
+    except Exception as e:
+        print(f"错误: 无法读取Excel文件: {e}")
+        return
+
+    # 读取表头
     headers = []
-    for col in range(1, ws.max_column + 1):
-        header = ws.cell(row=1, column=col).value
-        if header:
-            headers.append(header)
+    for cell in ws[1]:
+        if cell.value is not None:
+            headers.append(str(cell.value))  # 确保表头是字符串
+        else:
+            headers.append(f"Unnamed_{cell.column}")
 
-    print(f"表头: {headers}")
-
-    # 读取数据
     data = []
-    for row in range(2, ws.max_row + 1):
+
+    # 从第二行开始遍历
+    for row_values in ws.iter_rows(min_row=2, values_only=True):
         row_data = {}
-        for col, header in enumerate(headers, 1):
-            value = ws.cell(row=row, column=col).value
-            
-            # 尝试将字符串转换为列表（如果是位置数据）
-            if value and isinstance(value, str):
-                if value.startswith('[') and value.endswith(']'):
-                    try:
-                        value = eval(value)
-                    except:
-                        pass
-            
-            row_data[header] = value if value is not None else ""
-        
-        # 只添加非空行
-        if any(row_data.values()):
-            data.append(row_data)
+
+        # 跳过全空行
+        if all(value is None for value in row_values):
+            continue
+
+        for col_idx, header in enumerate(headers):
+            # 获取值，处理列数不一致的情况
+            value = row_values[col_idx] if col_idx < len(row_values) else None
+
+            # 处理空值
+            if value is None:
+                value = ""
+
+            # 核心：尝试将字符串解析为列表或字典
+            value = parse_json_string(value)
+
+            row_data[header] = value
+
+        data.append(row_data)
 
     print(f"共读取 {len(data)} 条记录")
 
-    # 确保输出目录存在
     output_dir = os.path.dirname(output_file)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # 保存JSON文件
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-    print(f"结果已保存到: {output_file}")
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        print(f"结果已保存到: {output_file}")
+    except Exception as e:
+        print(f"保存文件时出错: {e}")
 
 
 def main_cli():
-    parser = argparse.ArgumentParser(description='Excel转JSON工具')
-    parser.add_argument('--input', type=str, default='output_qwen3_32b_no.xlsx',
-                        help='输入的JSON文件路径')
-
-    parser.add_argument('--output', type=str, default='output_qwen3_32b_no.json',
-                        help='输出的Excel文件路径')
-
+    parser = argparse.ArgumentParser(description='Excel转JSON工具（支持类型还原）')
+    parser.add_argument('--input', type=str, default='output_qwen3_32b_all_0318_agent.xlsx',
+                        help='输入的Excel文件路径')
+    parser.add_argument('--output', type=str, default='output_qwen3_32b_all_0318_1_agent.json',
+                        help='输出的JSON文件路径')
     args = parser.parse_args()
 
-    input_path = args.input
-    output_path = args.output
-
-    if not os.path.exists(input_path):
-        print(f"错误: 输入文件不存在: {input_path}")
-        sys.exit(1)
-
-    excel_to_json(input_path, output_path)
+    excel_to_json(args.input, args.output)
 
 
 if __name__ == '__main__':
