@@ -312,7 +312,7 @@ def print_key_points_by_category(key_points):
 if __name__ == "__main__":
     utils = Path_eval_utils()
     # 请修改为你的实际文件路径
-    path_array = utils.to_path_ponit_array("D:/AirSim_Data/2026-03-30-15-10-40/airsim_rec.txt")
+    path_array = utils.to_path_ponit_array("D:/AirSim_Data/2026-03-19-17-09-26/airsim_rec.txt")
 
     if path_array:
         analyzer = TrajectoryAnalyzer()

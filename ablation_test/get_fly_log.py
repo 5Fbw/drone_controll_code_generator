@@ -212,8 +212,8 @@ def main(input_path, output_path, start_idx, end_idx, timeout):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AirSim JSON 自动化执行脚本")
-    parser.add_argument("--input", type=str, default="output_qwen3.5_397b_3_agent.json", help="输入JSON文件路径")
-    parser.add_argument("--output", type=str, default="output_qwen3.5_397b_3_agent_log.json", help="输出JSON文件路径")
+    parser.add_argument("--input", type=str, default="output_qwen3_32b_action.json", help="输入JSON文件路径")
+    parser.add_argument("--output", type=str, default="output_qwen3_32b_action_log.json", help="输出JSON文件路径")
     parser.add_argument("--start", type=int, default=0, help="起始序号 (包含)")
     parser.add_argument("--end", type=int, default=-1, help="截止序号 (包含，-1表示最后一条)")
     # [修改4] 新增命令行参数

@@ -9,7 +9,7 @@ from pathlib import Path
 
 # 引入 path_eval 中的相关类
 from path_eval import Path_eval_utils, TrajectoryAnalyzer
-
+import airsim_wrapper
 
 def get_latest_recording_path(base_path):
     """ 获取AirSim录制目录下最新生成的文件夹路径 """
@@ -99,7 +99,7 @@ def main(input_path, output_path, start_idx, end_idx, timeout):
     if not isinstance(data, list):
         print("错误：JSON文件根节点不是列表")
         return
-
+    aw = airsim_wrapper.AirSimWrapper()
     # 2. 初始化客户端
     client = airsim.MultirotorClient()
     client.confirmConnection()
@@ -119,8 +119,6 @@ def main(input_path, output_path, start_idx, end_idx, timeout):
         case = data[i]
         case_id = case.get("case_id", str(i))
         code = case.get("code", "")
-        # ✅ 新增：修复转义换行符
-        code = code.replace('\\n', '\n')
         print(f"正在执行 Case {case_id} ({i}/{end_idx})...")
 
         try:
@@ -128,7 +126,8 @@ def main(input_path, output_path, start_idx, end_idx, timeout):
             exec_globals = {
                 "__builtins__": __builtins__,
                 "airsim": airsim, "time": time, "math": math, "os": os,
-                "client": client
+                "client": client,
+                "aw": aw
             }
 
             # --- 开启录制 ---
@@ -198,8 +197,11 @@ def main(input_path, output_path, start_idx, end_idx, timeout):
             # 注意：原有的外层 try-except 结构中嵌套了finally，下面的finally会处理reset
         finally:
             # --- 重置环境 ---
-            client.reset()
+            # client.reset()
+            aw.reset_airsim()
+
             time.sleep(2)
+
 
     # 4. 保存结果
     try:
@@ -212,12 +214,14 @@ def main(input_path, output_path, start_idx, end_idx, timeout):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AirSim JSON 自动化执行脚本")
-    parser.add_argument("--input", type=str, default="output_qwen3.5_397b_3_agent.json", help="输入JSON文件路径")
-    parser.add_argument("--output", type=str, default="output_qwen3.5_397b_3_agent_log.json", help="输出JSON文件路径")
-    parser.add_argument("--start", type=int, default=0, help="起始序号 (包含)")
+    # parser.add_argument("--input", type=str, default="output.json", help="输入JSON文件路径")
+    # parser.add_argument("--output", type=str, default="output_log.json", help="输出JSON文件路径")
+    parser.add_argument("--input", type=str, default="output.json", help="输入JSON文件路径")
+    parser.add_argument("--output", type=str, default="output_log.json", help="输出JSON文件路径")
+    parser.add_argument("--start", type=int, default=16, help="起始序号 (包含)")
     parser.add_argument("--end", type=int, default=-1, help="截止序号 (包含，-1表示最后一条)")
     # [修改4] 新增命令行参数
-    parser.add_argument("--timeout", type=int, default=120, help="单条用例执行超时时间(秒)")
+    parser.add_argument("--timeout", type=int, default=180, help="单条用例执行超时时间(秒)")
 
     args = parser.parse_args()
     main(args.input, args.output, args.start, args.end, args.timeout)

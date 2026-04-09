@@ -62,6 +62,7 @@ class DroneCodeGenerator:
             base_url=config.base_url,
             model_kwargs={"extra_body": {"enable_thinking": False}}
         )
+        print(f"🤖 当前基座模型初始化为: {model_name}")
         self.seed_code = config.seed_code
 
     def _update_token_usage(self, response, state: AgentState) -> dict:
@@ -125,7 +126,7 @@ class DroneCodeGenerator:
         - 移动至 位置 速度（没有提到即为null） 时间（没有提到即为null） 方向 坐标系（全局或机身）。（x,y,z,角度）
         - 转向： 角度 速度（可以为null） 时间（没有提到即为null） 方向 坐标系（全局或机身）。（x,y,z,角度）
         3.采用NED坐标系，x正方向北，0度偏航角指向正北
-        4.重要注意，当指令没有提机身坐标系时，只需要提取东南西北指令，向北移动x变大，向南移动第一个参数x变小，向东移动y变大，向西移动y变小，
+        4.重要注意，当指令没有提机身坐标系时，只需要提取东南西北指令，向北移动x变大，向南移动第一个参数x变小，向东移动y变大，向西移动y变小
         4.重要注意，转向提到东南西北时，坐标系为全局，0度偏航角指向正北，90度偏航角指向正东，180度偏航角指向正南，270度偏航角指向正西
         4.重要注意，转向提到顺时针、向右偏航角变大，逆时针、向左偏航角变小
         5.当提到升高5m，提取移动，上升至5m，提取移动至
@@ -136,18 +137,19 @@ class DroneCodeGenerator:
          ## Response（回应示例）
         重要注意：移动至上升至描述，不再考虑原坐标，直接设为目标值
         重要注意：东南西北不考虑机身方向，向南移动x变小，向东移动y变大，向西移动y变小
-        重要注意：移动动作，向前x为正，向后x为夫负，向右y为正，向左y为负
+        重要注意：移动动作，向前x为正，向后x为负，向右y为正，向左y为负
         重要注意：顺时针、向右偏航角变大，逆时针、向左偏航角变小，正北对应0，正东对应90，正南对应180，正西对应270
-        中要注意：提到速度是需要提取速度参数
+        重要注意：向上，z变小，向下，z变大
         1 - 原始位置（0, 0, 0, 角度:0°）。
-        2 - 移动：3米 null null 向上 全局
-        2 - 移动至：10米 null null 向上 全局
+        2 - 移动：3米 null null 向上 全局(0, 0, -3, 角度:0°)z变小、
+        2 - 移动：2米 null null 向下 全局(0, 0, -3+2 = -1, 角度:0°)z变大
+        2 - 移动至：10米 null null 向上 全局(0, 0, -10, 角度:0°)
         3 - 移动 5米 null null 向北 全局 (5, 0, -10, 角度:0°)x变大
         4 - 移动 5米 null null 向西 全局 (5, -5, -10, 角度:0°)y变小
         5 - 移动：5米 null null 向后 机身 (-5, -5, -10, 角度:0°)
         7 - 移动：5米 1m/s 5s 向南 全局 (-10, 0, -10, 角度:0°)x变小
-        6 - 转向：45度 null null 向右 机身 (0, 0, -10, 角度:45°)
-        7 - 转向：270度 null null 正西 全局 (0, 0, -10, 角度:270°)
+        6 - 转向：45度 null null 向右 机身 (-10, 0, -10, 角度:45°)
+        7 - 转向：270度 null null 正西 全局 (-10, 0, -10, 角度:270°)
         飞机位置要根据动作改变
         """
 
@@ -180,28 +182,29 @@ class DroneCodeGenerator:
         print("=" * 60)
         elements_list = state["elements_list"]
         print(f"动作序列: {elements_list}...")
-
-        prompt = f"""
-        ## Objective（目标）
-        1. 将输入的动作指令用{config.language_name}语言的{config.lib_name}库函数给出代码。
-        2. 在开头加入控制解锁和在结尾加入控制结束
-        4。注意只有以机身坐标系前后左右用moveByVelocityBodyFrameAsync，全局坐标系东南西北使用moveToPositionAsync，移动参数根据动作解析结果转换
-        5.转向函数默认偏向角误差1度
-        ## context(内容)
-        {elements_list}
-
-        ## apis(参考api)
-        {self.seed_code}
-        
-        注意：重点检查相对机身向前移动使用moveByVelocityBodyFrameAsync(1, 0, 0, 1)，moveByVelocityBodyFrameAsync(0, 1, 0, 1)是错误的向左移动
-        moveByVelocityBodyFrameAsync(1, 0, 0, 15)的第一个参数是速度，最后一个参数是时间，表示以机身坐标系向前的方向以1m/s的速度，前进15s
-        顺时针，向右旋转，角度变大；逆时针向左旋转角度变小
-        速度为null时，一般设置为1m/s
-        """
-
+        prompt = f"{elements_list}"
+        # prompt = f"""
+        # ## Objective（目标）
+        # 1. 将输入的动作指令用{config.language_name}语言的{config.lib_name}库函数给出代码。
+        # 2. 在开头加入控制解锁和在结尾加入控制结束，不允许使用reset()函数
+        # 4。注意只有以机身坐标系前后左右用moveByVelocityBodyFrameAsync，全局坐标系东南西北使用moveToPositionAsync，移动参数根据动作解析结果转换
+        # 5.转向函数默认偏向角误差1度
+        # 6.未指定速度，速度默认为1m/s
+        # context(内容)
+        # {elements_list}
+        #
+        # ## apis(参考api)
+        # {self.seed_code}
+        #
+        # 注意：重点检查相对机身向前移动使用moveByVelocityBodyFrameAsync(1, 0, 0, 1)，moveByVelocityBodyFrameAsync(0, 1, 0, 1)是错误的向左移动
+        # moveByVelocityBodyFrameAsync(1, 0, 0, 15)的第一个参数是速度，最后一个参数是时间，表示以机身坐标系向前的方向以1m/s的速度，前进15s
+        # 顺时针，向右旋转，角度变大；逆时针向左旋转角度变小
+        # 速度为null时，一般设置为1m/s
+        # """
+        # 你是一个专业的无人机控制代码生成专家，将结构化动作序列转化为用airsim函数实现的代码。默认起点是（0，0，0），注释只需要写出动作目的，不需要思考过程给出python代码
         messages = [
             SystemMessage(
-                content="你是一个专业的无人机控制代码生成专家，负责将结构化动作序列转换为可执行的AirSim代码。默认起点是（0，0，0），注释只需要写出动作目的，不需要思考过程"),
+                content="你是一个专业的无人机控制代码生成专家，将结构化动作序列转化为用python语言的airsim函数实现的代码。默认起点是（0，0，0），注释只需要写出动作目的，不需要思考过程，给出可运行的代码"),
             HumanMessage(content=prompt)
         ]
 
@@ -251,6 +254,7 @@ class DroneCodeGenerator:
         当指令中没有提机身坐标系时，只需要提取东南西北上下指令，向北移动x变大，向东移动y变大
         注意 moveByVelocityBodyFrameAsync(0, 5, 0, 5)移动5*5 =25m
         client.moveToZAsync(-10, 1).join()的第一个参数是距离，代表移动10m第二个参数是速度参数，代表1m/s,
+        moveToPositionAsync(0, 0, -10, 1).join()的前三个参数是位置，最后一个参数是速度，代表以1m/s的速度移动到(0, 0, -10)
         ## Context
         给出{code_output['code']}对应的动作序列
         ## Response（回应示例）
@@ -281,8 +285,8 @@ class DroneCodeGenerator:
         首先提取移动动作的速度序列，速度通常以米每秒作为单位，转向、起飞、降落等动作不参与比较,目标动作序列速度为null的判断为正确
         举例
         client.moveByVelocityBodyFrameAsync(0, 5, 0, 5).join()，代表向右移动了5*5=25m，目标是5m，应修改为1*5 = 5，代码改正为client.moveByVelocityBodyFrameAsync(0, 1, 0, 5).join()
-        moveToZAsync(-8, 1)代表以1m/s的速度运动8m
-        
+        moveToZAsync(-8, 2)代表以2m/s的速度运动8m,不需要乘法
+
         逐条比较速度和距离，分析是否正确，不关注方向和坐标
         ##response
         格式要求：
@@ -495,8 +499,8 @@ class DroneCodeGenerator:
 
 
 # --- 构建图 ---
-def create_drone_code_graph():
-    generator = DroneCodeGenerator()
+def create_drone_code_graph(model_name: str):
+    generator = DroneCodeGenerator(model_name=model_name)
 
     workflow = StateGraph(AgentState)
 
@@ -512,33 +516,33 @@ def create_drone_code_graph():
     #
     # 定义基础边
     workflow.add_edge("movement_extractor", "code_generator")
-    workflow.add_edge("code_generator", "code_check_agent")
+    # workflow.add_edge("code_generator", "code_check_agent")
 
-    # 添加条件边：根据检查结果动态路由
-    def route_after_check(state: AgentState) -> str:
-        return state["current_agent"]
-
-    workflow.add_conditional_edges(
-        "code_check_agent",
-        route_after_check,
-        {
-            "code_correct_agent": "code_correct_agent",
-            "supervisor": "supervisor"
-        }
-    )
-
-    # 定义修正后的边：总是回到检查
-    workflow.add_edge("code_correct_agent", "code_check_agent")
-
-    # 定义 Supervisor 的边
+    # # 添加条件边：根据检查结果动态路由
+    # def route_after_check(state: AgentState) -> str:
+    #     return state["current_agent"]
+    #
+    # workflow.add_conditional_edges(
+    #     "code_check_agent",
+    #     route_after_check,
+    #     {
+    #         "code_correct_agent": "code_correct_agent",
+    #         "supervisor": "supervisor"
+    #     }
+    # )
+    #
+    # # 定义修正后的边：总是回到检查
+    # workflow.add_edge("code_correct_agent", "code_check_agent")
+    #
+    # # 定义 Supervisor 的边
     workflow.add_edge("supervisor", END)
 
     return workflow.compile()
 
 
 # --- 运行函数 ---
-def run_langgraph_agent(instruction: str, max_iterations: int = 3):
-    graph = create_drone_code_graph()
+def run_langgraph_agent(instruction: str, model_name: str, max_iterations: int = 3):
+    graph = create_drone_code_graph(model_name=model_name)  # 传给图
 
     initial_state = {
         "messages": [],
@@ -576,4 +580,3 @@ if __name__ == "__main__":
     print(f"  - Prompt Tokens: {result.get('prompt_tokens', 0)}")
     print(f"  - Completion Tokens: {result.get('completion_tokens', 0)}")
     print(f"生成的代码:\n{result['code_output']['code']}")
-

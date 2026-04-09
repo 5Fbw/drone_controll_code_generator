@@ -77,10 +77,10 @@ prompt = f'''
     给出修改后代码
 '''
 # response = llm_provider.qwen_api(prompt, stream=True)
-def code_generate_base(llm_provider,input: str):
+def code_generate_base(llm_provider,model_name,input: str):
     prompt = f"""不经过思考直接给出用airsim函数实现{input}"""
 
-    response = llm_provider.qwen_api(prompt, stream=False)
+    response = llm_provider.qwen_api(prompt, model_name,stream=False)
     code_output = {
         "version": 0,
         "code": {response},

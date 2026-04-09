@@ -7,9 +7,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import main
 import LLm_provider
-
-
-def run_test(input_file: str, output_file: str, model_name: str = "qwen3-32b", start_idx: int = 0, end_idx: int = None):
+#workflow批量生成代码的批量脚本
+def run_test(input_file: str, output_file: str, model_name: str,start_idx: int = 0, end_idx: int = None):
     """
     读取输入文件，生成代码，并保存到输出文件
 
@@ -54,9 +53,10 @@ def run_test(input_file: str, output_file: str, model_name: str = "qwen3-32b", s
         print(f"  指令: {instruction}")
 
         try:
-            result = main.run(llm_provider, instruction)
+            result = main.run_without_agent(llm_provider, model_name,instruction)
             code = main.get_python_code(result)
-
+            # 将字面的 \n 转换为真正的换行符
+            code = code.replace('\\n', '\n')
             test_case['code'] = code
             test_case['model'] = model_name
 
@@ -84,14 +84,16 @@ def main_cli():
     parser = argparse.ArgumentParser(description='无人机控制代码生成测试')
     parser.add_argument('--input', type=str, default='data.json',
                         help='输入JSON文件路径')
-    parser.add_argument('--output', type=str, default='output_qwen3_32b_all_0.json',
+    parser.add_argument('--output', type=str, default='output_qwen3.5_397b.json',
                         help='输出JSON文件路径')
-    parser.add_argument('--model', type=str, default='qwen3-32b',
+    # parser.add_argument('--model', type=str, default='qwen3-32b',
+    #                     help='基座大模型名称')
+    parser.add_argument('--model', type=str, default='qwen3.5-397b-a17b',
                         help='基座大模型名称')
-    parser.add_argument('--start', type=int, default=2,
+    parser.add_argument('--start', type=int, default=0,
                         help='起始序号（包含）')
     parser.add_argument('--end', type=int, default=None,
-                        help='截止序号（不包含）')
+                        help='截止序号（不包含）,None表示到结尾')
 
     args = parser.parse_args()
 

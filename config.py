@@ -11,7 +11,7 @@ seed_code = '''
     -以全局坐标系以指定速度移动指定时间 向北移动x变大，向南移动x变小，向东移动y变大，向西移动y变小
     moveToPositionAsync(-10, 0, 0, 1).join() 在全局坐标以1m/s速度南移动10m的速度
     -转向 
-    rotateToYawAsync( -90,1).join()转向正西方 ,偏向角误差范围是-1
+    rotateToYawAsync( -90,margin = 1).join()转向正西方 ,偏向角误差范围是-1
 '''
 security_check_flag = True
 security_constraints = {
@@ -27,5 +27,6 @@ class Status(Enum):
     CORRECT = "正确"
     ERROR = "错误"
 
-api_key_new = "sk-f25779b5a1464f97bd5395cb954154d3"
+# api_key_new = "sk-f25779b5a1464f97bd5395cb954154d3"#新手机
+api_key_new = "sk-7756b0d129fe49f7891833d102eb1f41"#yan
 base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"

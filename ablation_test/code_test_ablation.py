@@ -139,13 +139,11 @@ def run_test(input_file: str, output_file: str, model_name: str = "qwen3-32b", s
 
 def main_cli():
     parser = argparse.ArgumentParser(description='无人机控制代码生成测试 (Agent模式)')
-    parser.add_argument('--input', type=str, default='data.json',
+    parser.add_argument('--input', type=str, default='../test/data.json',
                         help='输入JSON文件路径')
-    parser.add_argument('--output', type=str, default='output_qwen3.5_397b_3_agent.json',
+    parser.add_argument('--output', type=str, default='output_qwen3_32b_action.json',
                         help='输出JSON文件路径')
-    # parser.add_argument('--model', type=str, default='qwen3-32b',
-    #                     help='基座大模型名称')
-    parser.add_argument('--model', type=str, default='qwen3.5-397b-a17b',
+    parser.add_argument('--model', type=str, default='qwen3-32b',
                         help='基座大模型名称')
     parser.add_argument('--start', type=int, default=0,
                         help='起始序号（包含）')

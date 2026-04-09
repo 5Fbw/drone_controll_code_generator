@@ -394,8 +394,10 @@ def calculate_overall_statistics(results: List[Dict[str, Any]]) -> Dict[str, Any
 
 def main():
     parser = argparse.ArgumentParser(description='轨迹比对工具')
-    parser.add_argument('--input', '-i', default="output_qwen3.5_397b_3_agent_log.json", help='输入JSON文件路径')
-    parser.add_argument('--output', '-o', default="output_qwen3.5_397b_3_agent_result.json", help='输出JSON文件路径')
+    # parser.add_argument('--input', '-i', default="../test/output_qwen3.5_397b_agent_log_1.json", help='输入JSON文件路径')
+    # parser.add_argument('--output', '-o', default="../test/output_qwen3.5_397b_agent_result_1.json", help='输出JSON文件路径')
+    parser.add_argument('--input', '-i', default="output_qwen3.5_397b_2_agent_log.json", help='输入JSON文件路径')
+    parser.add_argument('--output', '-o', default="output_qwen3.5_397b_2_agent_result.json", help='输出JSON文件路径')
     parser.add_argument('--start', '-s', type=int, default=0, help='开始序号（默认为0）')
     parser.add_argument('--end', '-e', type=int, default=-1, help='结束序号（-1表示到最后，默认为-1）')
     parser.add_argument('--tolerance', '-t', type=float, default=1.0, help='单步误差容差阈值（米，默认1.0）')

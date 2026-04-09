@@ -80,10 +80,10 @@ def main_cli():
     parser = argparse.ArgumentParser(description='JSON转Excel工具')
 
     # 修改此处：删除 required=True，添加 default 参数
-    parser.add_argument('--input', type=str, default='output_qwen3_32b_all_0318_1_agent.json',
+    parser.add_argument('--input', type=str, default='output_qwen3.5_397b_agent_1.json',
                         help='输入的JSON文件路径')
 
-    parser.add_argument('--output', type=str, default='output_qwen3_32b_all_0318_1_agent.xlsx',
+    parser.add_argument('--output', type=str, default='output_qwen3.5_397b_agent_1.xlsx',
                         help='输出的Excel文件路径')
 
     args = parser.parse_args()

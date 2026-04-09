@@ -15,11 +15,12 @@ def run(llm_provider,instruction: str):
     """
     elements_list = movement_extractor.movement_extract(llm_provider,instruction)
     code_output = code_generator.code_generate(llm_provider,elements_list)
-    code_output = code_generator.check(elements_list, code_output)
+    # code_output = code_generator.check(elements_list, code_output)
+    code_output = code_checker.syntax_check(code_output)
     return code_output
 
 
-def run_without_agent(llm_provider,instruction: str):
+def run_without_agent(llm_provider,model_name,instruction: str):
     """
     直接根据自然语言指令生成无人机控制代码（不经过agent解析和检验）
 
@@ -29,7 +30,7 @@ def run_without_agent(llm_provider,instruction: str):
     Returns:
         code_output: 包含生成代码的字典，包含version、code、status、description字段
     """
-    code_output = code_generator.code_generate_base(llm_provider,instruction)
+    code_output = code_generator.code_generate_base(llm_provider,model_name,instruction)
     return code_output
 
 def get_python_code(code_output):
@@ -51,15 +52,16 @@ def get_python_code(code_output):
     code_only = codes_only[0]
     return code_only
 if __name__ == '__main__':
-    # instruction = "起飞并上升5米。你应该以5米边长的正方形模式飞行，通过向前移动并在每个角落向右转实现"
-    # instruction = "起飞，以每秒1米的速度升空至10米高度。前进5米,然后转向正西，并以每秒1米的速度前进10米。然后降落"
-    instruction = "起飞至10m高度，向右飞行5m，顺时针旋转45度，向前飞行10m"
+    instruction = "起飞并上升5米。你应该以5米边长的正方形模式飞行，通过向前移动并在每个角落向右转实现"
+    # instruction = "起飞至8m高度,并向下飞行5m"
+    # instruction = "起飞至10m高度，以1m/s向右飞行5m，顺时针旋转45度，向前飞行10m"
     llm_provider = LLm_provider.LLMProvider()
     result = run(llm_provider,instruction)
-    # result = run_without_agent(llm_provider,instruction)
+    result = run_without_agent(llm_provider,instruction)
     # result = get_python_code(result)
-    # elements_list = movement_extractor.movement_extract(llm_provider,instruction)
+    elements_list = movement_extractor.movement_extract(llm_provider,instruction)
     print("生成完成")
+    print(elements_list)
     # print(f"版本: {result.get('version')}")
     # print(f"状态: {result.get('status')}")
-    print(f"代码:\n{result.get('code')}")
+    # print(f"代码:\n{result.get('code')}")
